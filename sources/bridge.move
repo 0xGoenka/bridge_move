@@ -1,14 +1,10 @@
 
 module bridge::bridge {
     use std::string::String;
-    use std::debug;
     use sui::event;
     use sui::coin::Coin;
     use sui::coin;
     use sui::sui::SUI;
-    use sui::url::{Self,Url};
-    use bridge::nft;
-
 
 
     const ERROR_INSUFFICIENT_FUNDS: u64 = 1;
@@ -20,13 +16,6 @@ module bridge::bridge {
         model_name: String,
         sender: address,
     }   
-
-    // public struct JARJAR_Nft has key, store {
-    //     id: UID,
-    //     name: String,
-    //     description: String,
-    //     url: Url,
-    // }
 
     public struct OwnerCap has key { id: UID, owner: address }
 
@@ -61,34 +50,4 @@ module bridge::bridge {
         });
     }
 
-    // public fun callback(
-    //     url: vector<u8>,
-    //     name: String,
-    //     authorAddr: address,
-    //     ctx: &mut TxContext
-    //     ) {
-    //     // assert!(tx_context::sender(ctx) == );
-    //     let nft = JARJAR_Nft {
-    //         id: object::new(ctx),
-    //         name,
-    //         url: url::new_unsafe_from_bytes(url),
-    //         description: name,
-    //         };
-    //     debug::print(&nft);
-    //     transfer::public_transfer(nft, authorAddr);
-    // }
-
-//     public fun name(nft: &JARJAR_Nft): &String {
-//         &nft.name
-//     }
-
-//     /// Get the NFT's `description`
-//     public fun description(nft: &JARJAR_Nft): &String {
-//         &nft.description
-//     }
-
-//     /// Get the NFT's `url`
-//     public fun url(nft: &JARJAR_Nft): &Url {
-//         &nft.url
-//     }
-// }
+}
