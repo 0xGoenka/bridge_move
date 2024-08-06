@@ -6,7 +6,6 @@ module bridge::bridge {
     use sui::coin;
     use sui::sui::SUI;
 
-
     const ERROR_INSUFFICIENT_FUNDS: u64 = 1;
     const MIN_INFERENCE_COST: u64 = 50_000_000;
     
@@ -15,6 +14,7 @@ module bridge::bridge {
         prompt_data: String, 
         model_name: String,
         sender: address,
+        value: u64,
     }   
 
     public struct OwnerCap has key { id: UID, owner: address }
@@ -47,7 +47,7 @@ module bridge::bridge {
             prompt_data,
             model_name,
             sender: tx_context::sender(ctx),
+            value,
         });
     }
-
 }
