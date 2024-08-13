@@ -1,5 +1,5 @@
 
-module bridge::bridge {
+module jarjar_ai_oracle::jarjar_ai_oracle {
     use std::string::String;
     use sui::event;
     use sui::coin::Coin;
@@ -11,7 +11,8 @@ module bridge::bridge {
     
 
     public struct EventGenerate has copy, drop  {
-        prompt_data: String, 
+        prompt_data: String,
+        callback_data: String,
         model_name: String,
         sender: address,
         value: u64,
@@ -35,6 +36,7 @@ module bridge::bridge {
 
     public fun generate(
         prompt_data: String,  
+        callback_data: String,
         model_name: String,
         payment: Coin<SUI>,
         ownercap: &mut OwnerCap,
@@ -49,6 +51,7 @@ module bridge::bridge {
 
         event::emit(EventGenerate {
             prompt_data,
+            callback_data,
             model_name,
             sender: tx_context::sender(ctx),
             value,
