@@ -5,9 +5,9 @@ module jarjar_ai_oracle::jarjar_ai_oracle {
     use sui::coin::Coin;
     use sui::coin;
     use sui::sui::SUI;
+    use jarjar_ai_oracle::price_model::{Self, PriceModel};
 
-    const ERROR_INSUFFICIENT_FUNDS: u64 = 1;
-    const ERROR_NOT_OWNER: u64 = 2;
+    const EInvalidPrice: u64 = 1;
     
     public struct EventGenerate has copy, drop  {
         prompt_data: String,
@@ -17,29 +17,19 @@ module jarjar_ai_oracle::jarjar_ai_oracle {
         value: u64,
     }   
 
-    public struct OwnerCap has key { id: UID, owner: address, oracle_price: u64 }
+    public struct OwnerCap has key { id: UID, owner: address }
 
     fun init(ctx: &mut TxContext) {
         transfer::share_object(
     OwnerCap {
-        id: object::new(ctx),
-        owner: tx_context::sender(ctx),
-        oracle_price: 100_000_000,
-      }
-    );
+            id: object::new(ctx),            
+            owner: tx_context::sender(ctx),
+        }
+        );
     } 
 
     public fun get_owner_cap_address(ownercap: &OwnerCap): address {
         ownercap.owner
-    }
-
-    public fun get_oracle_price(ownercap: &OwnerCap): u64 {
-        ownercap.oracle_price
-    }
-
-    public fun update_oracle_price(oracle_price: u64, ownercap: &mut OwnerCap, ctx: &mut TxContext) {
-        assert!(tx_context::sender(ctx) == ownercap.owner, ERROR_NOT_OWNER);
-        ownercap.oracle_price = oracle_price;
     }
 
     public fun generate(
@@ -47,13 +37,14 @@ module jarjar_ai_oracle::jarjar_ai_oracle {
         callback_data: String,
         model_name: String,
         payment: Coin<SUI>,
+        price_model: &PriceModel,
         ownercap: &mut OwnerCap,
         ctx: &mut TxContext
-        ) {
+    ) {
+        let price = price_model::get_price(price_model, &model_name);
+        assert!(coin::value(&payment) >= price, EInvalidPrice);
 
         let value: u64 = coin::value(&payment);
-
-        assert!(value == get_oracle_price(ownercap), ERROR_INSUFFICIENT_FUNDS);
 
         transfer::public_transfer(payment, ownercap.owner);
 
